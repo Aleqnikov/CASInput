@@ -1,27 +1,65 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <cctype>
 #include <vector>
+#include <string>
 
+#include "Exeptions/Errors.h"
 #include "Token.h"
-#include "Exeptions/InputError.h"
 
+
+/**
+ * @brief Класс Lexer выполняет токенизацию математического выражения.
+ *
+ * Лексер преобразует входную строку в последовательность токенов (`Token`),
+ * поддерживает:
+ * - числа (Num)
+ * - переменную x (X)
+ * - операторы (+, -, *, /, ^)
+ * - неявное умножение (например, "2x" → Num("2"), Mul("*"), X("x"))
+ *
+ * Игнорируются пробелы и символы табуляции.
+ */
 class Lexer {
 public:
-	Lexer();
-	Lexer(std::string);
+	/**
+	 * @brief Конструктор Lexer.
+	 * @param input Входная строка с математическим выражением.
+	 */
+	explicit Lexer(std::string input);
 
+	/**
+	 * @brief Создаёт токены из входной строки.
+	 *
+	 * Пробелы игнорируются. Числа объединяются в один токен,
+	 * переменная 'x' создаёт отдельный токен, операторы создают соответствующие токены.
+	 * Число перед 'x' автоматически добавляет неявное умножение.
+	 *
+	 * @throws InputError Если входная строка пуста или содержит недопустимый символ.
+	 */
 	void CreateTokens();
 
-	std::vector<Token>& GetTokens();
+	/**
+	 * @brief Получить список токенов после токенизации.
+	 *
+	 * @return const std::vector<Token>& Константная ссылка на вектор токенов.
+	 */
+	const std::vector<Token>& GetTokens() const;
 
 private:
-	std::string input_;
-	std::vector<Token> tokens_;
+	std::string input_;             /**< Входная строка с выражением */
+	std::vector<Token> tokens_;     /**< Вектор токенов после токенизации */
 
-
+	/**
+	 * @brief Создаёт токен из символа и добавляет его в список токенов.
+	 *
+	 * Обрабатывает ошибки создания токена и выбрасывает InputError при недопустимом символе.
+	 *
+	 * @param ch Символ для преобразования в токен.
+	 * @throws InputError Если символ недопустим для токена.
+	 */
+	void push_token(char ch);
 };
 
-
-
-#endif //LEXER_H
+#endif // LEXER_H

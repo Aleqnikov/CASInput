@@ -1,14 +1,13 @@
-//
-// Created by ivan on 30.10.25.
-//
-
 #ifndef TOKEN_H
 #define TOKEN_H
 
 #include <string>
-#include <cctype>  // для std::isdigit
-#include "Exeptions/TokenError.h"
+#include <cctype>
+#include "Exeptions/Errors.h"
 
+/**
+ * @brief Перечисление TokenType хранит все возможные типы токенов.
+ */
 enum class TokenType {
 	Mul = '*',
 	Add = '+',
@@ -16,34 +15,51 @@ enum class TokenType {
 	Div = '/',
 	Pow = '^',
 	X = 'x',
-	Num,
+	Num
 };
 
+/**
+ * @brief Структура Token представляет отдельный токен.
+ *
+ * Может создавать токены из символа, сравнивать токены и хранить
+ * значение и тип токена.
+ */
 struct Token {
-	Token(char symb) {
-		switch (symb) {
-			case '+': type = TokenType::Add; value = "+"; break;
-			case '*': type = TokenType::Mul; value = "*"; break;
-			case '-': type = TokenType::Sub; value = "-"; break;
-			case '/': type = TokenType::Div; value = "/"; break;
-			case '^': type = TokenType::Pow; value = "^"; break;
-			case 'x': type = TokenType::X;   value = "x"; break;  // исправил на строчную
-			default:
-				if (std::isdigit(symb)) {
-					type = TokenType::Num;
-					value = std::string(1, symb);
-				} else {
-					throw TokenError("Invalid token: " + std::string(1, symb));
-				}
-		}
-	}
+	/**
+	 * @brief Создает токен из переданного символа.
+	 *
+	 * Проверяет символ и выбирает подходящий тип токена.
+	 *
+	 * @param symb Символ для создания токена.
+	 * @return Token Созданный токен.
+	 *
+	 * @throws TokenError Если символ не распознается как допустимый токен.
+	 */
+	static Token CreateToken(char symb);
 
-	TokenType type;
-	std::string value;
-
+	/**
+	 * @brief Оператор сравнения двух токенов.
+	 *
+	 * Сравнивает тип и значение токенов.
+	 *
+	 * @param other Другой токен для сравнения.
+	 * @return true если токены одинаковые.
+	 * @return false если токены различаются.
+	 */
 	bool operator==(const Token& other) const {
 		return type == other.type && value == other.value;
 	}
+
+	TokenType type;      /**< Тип токена */
+	std::string value;   /**< Значение токена */
+
+private:
+	/**
+	 * @brief Конструктор токена.
+	 * @param t Тип токена
+	 * @param s Символ токена
+	 */
+	Token(TokenType t, char s) : type(t), value(1, s) {}
 };
 
-#endif //TOKEN_H
+#endif // TOKEN_H
